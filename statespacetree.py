@@ -1,49 +1,15 @@
 import igraph
-from igraph import Graph, EdgeSeq
-import plotly.express as px
+from igraph import *
 
-print(dir(igraph))
-nr_vertices = 21
-v_label = list(map(str, range(nr_vertices)))
-G = Graph.Tree(nr_vertices, 5) # 2 stands for children number
-lay = G.layout('rt')
+print(igraph.__version__)
 
-position = {k: lay[k] for k in range(nr_vertices)}
-Y = [lay[k][1] for k in range(nr_vertices)]
-M = max(Y)
-
-es = EdgeSeq(G) # sequence of edges
-E = [e.tuple for e in G.es] # list of edges
-
-L = len(position)
-Xn = [position[k][0] for k in range(L)]
-Yn = [2*M-position[k][1] for k in range(L)]
-Xe = []
-Ye = []
-for edge in E:
-    Xe+=[position[edge[0]][0],position[edge[1]][0], None]
-    Ye+=[2*M-position[edge[0]][1],2*M-position[edge[1]][1], None]
-
-labels = v_label
-
-import plotly.graph_objects as go
-fig = go.Figure()
-fig.add_trace(go.Scatter(x=Xe,
-                   y=Ye,
-                   mode='lines',
-                   line=dict(color='rgb(210,210,210)', width=1),
-                   hoverinfo='none'
-                   ))
-fig.add_trace(go.Scatter(x=Xn,
-                  y=Yn,
-                  mode='markers',
-                  name='bla',
-                  marker=dict(symbol='circle-dot',
-                                size=18,
-                                color='#6175c1',    #'#DB4551',
-                                line=dict(color='rgb(50,50,50)', width=1)
-                                ),
-                  text=labels,
-                  hoverinfo='text',
-                  opacity=0.8
-                  ))
+g = Graph([(0,1), (0,2), (2,3), (3,4), (4,2), (2,5), (5,0), (6,3), (5,6)])
+g.vs["name"] = ["Alice", "Bob", "Claire", "Dennis", "Esther", "Frank", "George"]
+g.vs["age"] = [25, 31, 18, 47, 22, 23, 50]
+g.vs["gender"] = ["f", "m", "f", "m", "f", "m", "m"]
+g.es["is_formal"] = [False, False, True, True, True, False, True, False, False]
+g.vs["label"] = g.vs["name"]
+color_dict = {"m": "blue", "f": "pink"}
+g.vs["color"] = [color_dict[gender] for gender in g.vs["gender"]]
+layout = g.layout("kk")
+plot(g, layout=layout, bbox=(300, 300), margin=20)
